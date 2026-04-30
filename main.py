@@ -10,6 +10,8 @@ from keras.models import Sequential
 df=pd.read_csv("airpollution.csv")
 # print(df.head())
 # print(df.columns)
+sns.boxplot(data=df)
+# plt.show()
 
 sns.pairplot(data=df)
 # plt.show()
@@ -34,33 +36,33 @@ filtered_data = filtered_data.dropna(subset=[
 ]).reset_index(drop=True)
 
 # print(filtered_data.shape)
-x=filtered_data[["AQI Value","CO AQI Value","Ozone AQI Value","NO2 AQI Value","PM2.5 AQI Value"]]
+x=filtered_data[["CO AQI Value","Ozone AQI Value","NO2 AQI Value","PM2.5 AQI Value"]]
 
 le=LabelEncoder()
-y=le.fit_transform(filtered_data["PM2.5 AQI Category"])
+y=le.fit_transform(filtered_data["AQI Category"])
 
-ohe=OneHotEncoder(sparse_output=False,drop="first")
-cat_data=filtered_data[["AQI Category","CO AQI Category","Ozone AQI Category","NO2 AQI Category"]]
-en_data=ohe.fit_transform(cat_data)
-en_dataframe=pd.DataFrame(en_data, columns=ohe.get_feature_names_out(cat_data.columns))
+# ohe=OneHotEncoder(sparse_output=False,drop="first")
+# cat_data=filtered_data[["CO AQI Category","Ozone AQI Category","NO2 AQI Category"]]
+# en_data=ohe.fit_transform(cat_data)
+# en_dataframe=pd.DataFrame(en_data, columns=ohe.get_feature_names_out(cat_data.columns))
 
-x_en=pd.concat([x,en_dataframe],axis=1)
+# x_en=pd.concat([x,en_dataframe],axis=1)
 
-od=OrdinalEncoder()
-od_cat_data=filtered_data[["Country","City"]]
-od_en_data=od.fit_transform(od_cat_data)
-en_od=pd.DataFrame(od_en_data,columns=od_cat_data.columns)
+# od=OrdinalEncoder()
+# od_cat_data=filtered_data[["Country","City"]]
+# od_en_data=od.fit_transform(od_cat_data)
+# en_od=pd.DataFrame(od_en_data,columns=od_cat_data.columns)
 
-x_final=pd.concat([x_en,en_od],axis=1)
+# x_final=pd.concat([x_en,en_od],axis=1)
 
 ss=StandardScaler()
-X_final=pd.DataFrame(data=ss.fit_transform(x_final),columns=x_final.columns)
+X_final=pd.DataFrame(data=ss.fit_transform(x),columns=x.columns)
 
 x_train,x_test,y_train,y_test=train_test_split(X_final,y,test_size=0.2,random_state=42)
 
 ann=Sequential()
 
-ann.add(Dense(12,input_dim=15,activation=tf.keras.activations.relu))
+ann.add(Dense(11,input_dim=4,activation=tf.keras.activations.relu))
 ann.add(Dense(10,activation=tf.keras.activations.relu))
 ann.add(Dense(8,activation=tf.keras.activations.relu))
 ann.add(Dense(7,activation=tf.keras.activations.relu))
